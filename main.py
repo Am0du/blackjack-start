@@ -1,38 +1,22 @@
 from art import logo
 import random
 from replit import clear
+from my_functions import give_card, scores, check_blackjack, random_bet, bet_winner
 
-def give_card(deck):
-    """Generates a card"""
-    random_num = random.randint(0,len(deck) -1)
-    draw = deck[random_num]
-    return draw
+def rerun_game(user_name):
+    """Restarts the game """
+    rerun = input("Type 'y' to restart game or 'n' to end: ")
+    if rerun == 'y':
+        clear()
+        blackjack()
+    elif rerun == 'n':
+        clear()
+        print(logo)
+        print(f"Goodbye {user_name}")
+    else:
+        print("Invalid option")
+        rerun()
 
-def scores(u_score):
-    """add total score and checks for ace"""
-    score = sum(u_score)
-    ace = 0
-    for i in range(len(u_score)):
-        if u_score[i] == 11:
-            ace = u_score[i]
-        
-    if score >= 21 and ace == 11:
-        return score - 10
-        
-    return score
-
-def check_blackjack(user_, comp_, user_name):
-    """Checks if there's an BlackJack"""
-    if sum(user_) <= 21 and sum(comp_) <= 21:
-       return ""
-        
-    elif sum(comp_) == 21:
-        return f"computer's card = {comp_}: Total: {sum(comp_)}\n BLACKJACK, Computer wins"
-     
-    elif sum(user_) == 21:
-        return f"{user_name}'s card = {user_}: Total: {sum(user_)}\n BLACKJACK {user_name} wins"
-       
-            
 def blackjack():
     """Hold the game """
     print(logo)
@@ -41,6 +25,10 @@ def blackjack():
     user = []
     comp = []
     user_name = input("What's Your name: ")
+    user_bet = int(input("Place a bet: $"))
+    comp_bet = random_bet()
+    print(f"The computer place a bet of ${comp_bet}")
+    
     for i in range(2):
         user.append(give_card(cards))
         comp.append(give_card(cards))
@@ -70,15 +58,9 @@ def blackjack():
         print(f"{user_name}'s card = {user}::::::::TOTAL = {user_score}\n Computer's card = [{comp[0]}]")
 
         if user_score > 21:
-            print(f"Computer's card = {comp}, Computer wins")
+            print(bet_winner(comp_score,user_name, user_score, comp_bet, user_bet, comp, user))
             another_card = False
-            rerun = input("Type 'y' to restart game: ")
-            if rerun == 'y':
-                blackjack()
-            else:
-                clear()
-                print(f"Goodbye {user_name}")
-            
+            rerun_game(user_name)
         else:
             restart = input("Type 'y' to get another card, 'n' to end: ")
             if restart == 'y' :
@@ -93,22 +75,9 @@ def blackjack():
         comp_score = scores(comp)
 
     #checks for a winner
-    if comp_score > 21 or user_score > comp_score:
-         print(f"{user_name} = {user}, {user_name} wins")
-    elif comp_score > user_score:
-        print(f"Computer's card = {comp} Computer wins")
-    else: 
-        print(f"Computer's card = {comp} and {user_name}'s card = {user}, Its a draw")
+    print(bet_winner(comp_score,user_name, user_score, comp_bet, user_bet, comp, user))
     
     #Restart the game
-    rerun = input("Type 'y' to restart game or 'n' to end: ")
-    if rerun == 'y':
-        clear()
-        blackjack()
-    else:
-        clear()
-        print(logo)
-        print(f"Goodbye {user_name}")
-        
+    rerun_game(user_name)
 
 blackjack()
